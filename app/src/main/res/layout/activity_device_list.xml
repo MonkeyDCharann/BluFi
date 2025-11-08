@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Root container: Main screen layout using ConstraintLayout for flexible positioning -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground"
+    tools:context=".Device_List">
+
+    <!-- ScrollView: Enables vertical scrolling for entire content when it exceeds screen height -->
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:paddingHorizontal="@dimen/screen_padding"
+        android:paddingVertical="@dimen/screen_padding_vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Main Container: Vertical LinearLayout organizing all UI sections from top to bottom -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:minHeight="@dimen/min_content_height">
+
+            <!-- Header Card: Top section displaying screen title and Bluetooth status with elevated card design -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/headerCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/section_spacing"
+                app:cardCornerRadius="@dimen/card_corner_radius"
+                app:cardElevation="@dimen/card_elevation_high"
+                app:cardBackgroundColor="?attr/colorPrimary">
+
+                <!-- Header Content: Horizontal layout containing back button, icon, title, and status indicator -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/card_padding"
+                    android:minHeight="@dimen/header_min_height"
+                    android:gravity="center_vertical">
+
+                    <!-- Back Button: Navigation button to return to previous screen -->
+                    <ImageButton
+                        android:id="@+id/backButton"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/ic_arrow_back"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Back"
+                        app:tint="?attr/colorOnPrimary" />
+
+                    <!-- Bluetooth Icon: Visual indicator for Bluetooth functionality -->
+                    <ImageView
+                        android:layout_width="@dimen/icon_size_large"
+                        android:layout_height="@dimen/icon_size_large"
+                        android:src="@android:drawable/stat_sys_data_bluetooth"
+                        android:layout_marginEnd="@dimen/icon_margin"
+                        app:tint="?attr/colorOnPrimary" />
+
+                    <!-- Screen Title: Main heading displaying "Bluetooth Devices" -->
+                    <TextView
+                        android:id="@+id/tvStatus"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Bluetooth Devices"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/header_text_size"
+                        android:textColor="?attr/colorOnPrimary"
+                        android:maxLines="2"
+                        android:ellipsize="end" />
+
+                    <!-- Bluetooth Status Icon: Displays current Bluetooth connection state -->
+                    <ImageView
+                        android:id="@+id/ivBluetoothStatus"
+                        android:layout_width="@dimen/icon_size_medium"
+                        android:layout_height="@dimen/icon_size_medium"
+                        android:src="@drawable/ic_bluetooth_data"
+                        />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Paired Devices Card: Section displaying list of already paired Bluetooth devices -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/pairedCard"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="@integer/paired_weight"
+                android:layout_marginBottom="@dimen/section_spacing"
+                app:cardCornerRadius="@dimen/card_corner_radius"
+                app:cardElevation="@dimen/card_elevation_medium"
+                app:cardBackgroundColor="?android:attr/colorBackground">
+
+                <!-- Paired Card Container: Vertical layout organizing section header and device list -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <!-- Paired Section Header: Title bar with icon, label, and device count badge -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/section_header_padding"
+                        android:minHeight="@dimen/section_header_min_height"
+                        android:background="?attr/colorSurfaceVariant"
+                        android:gravity="center_vertical">
+
+                        <!-- Paired Devices Icon: Bluetooth symbol for paired section -->
+                        <ImageView
+                            android:layout_width="@dimen/icon_size_medium"
+                            android:layout_height="@dimen/icon_size_medium"
+                            android:src="@android:drawable/stat_sys_data_bluetooth"
+                            android:layout_marginEnd="@dimen/icon_margin_small"
+                            app:tint="?attr/colorOnSurfaceVariant" />
+
+                        <!-- Paired Devices Label: Section title text -->
+                        <TextView
+                            android:id="@+id/tvPaired"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Paired Devices"
+                            android:textStyle="bold"
+                            android:textSize="@dimen/section_text_size"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:maxLines="1"
+                            android:ellipsize="end" />
+
+                        <!-- Paired Count Badge: Displays number of paired devices -->
+                        <TextView
+                            android:id="@+id/tvPairedCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textSize="@dimen/badge_text_size"
+                            android:background="?attr/colorPrimary"
+                            android:textColor="?attr/colorOnPrimary"
+                            android:paddingHorizontal="@dimen/badge_padding_horizontal"
+                            android:paddingVertical="@dimen/badge_padding_vertical"
+                            android:minWidth="@dimen/badge_min_width"
+                            android:gravity="center"
+                            android:layout_marginStart="@dimen/icon_margin_small"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <!-- Paired Devices List: Scrollable list view displaying all paired Bluetooth devices -->
+                    <ListView
+                        android:id="@+id/listPaired"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:layout_margin="@dimen/list_margin"
+                        android:divider="?attr/colorOutlineVariant"
+                        android:dividerHeight="1dp"
+                        android:paddingHorizontal="@dimen/list_padding_horizontal"
+                        android:paddingVertical="@dimen/list_padding_vertical"
+                        android:clipToPadding="false"
+                        android:scrollbars="vertical"
+                        android:fastScrollEnabled="true"
+                        android:scrollbarStyle="outsideOverlay" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Discovered Devices Card: Section displaying newly found devices during scanning -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/discoveredCard"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="@integer/discovered_weight"
+                android:layout_marginBottom="@dimen/section_spacing"
+                app:cardCornerRadius="@dimen/card_corner_radius"
+                app:cardElevation="@dimen/card_elevation_medium"
+                app:cardBackgroundColor="?android:attr/colorBackground">
+
+                <!-- Discovered Card Container: Vertical layout organizing section header and device list -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <!-- Discovered Section Header: Title bar with search icon, label, and device count badge -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/section_header_padding"
+                        android:minHeight="@dimen/section_header_min_height"
+                        android:background="?attr/colorSurfaceVariant"
+                        android:gravity="center_vertical">
+
+                        <!-- Discovered Devices Icon: Search symbol indicating discovery mode -->
+                        <ImageView
+                            android:layout_width="@dimen/icon_size_medium"
+                            android:layout_height="@dimen/icon_size_medium"
+                            android:src="@android:drawable/ic_menu_search"
+                            android:layout_marginEnd="@dimen/icon_margin_small"
+                            app:tint="?attr/colorOnSurfaceVariant" />
+
+                        <!-- Discovered Devices Label: Section title text -->
+                        <TextView
+                            android:id="@+id/tvDiscovered"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Discovered Devices"
+                            android:textStyle="bold"
+                            android:textSize="@dimen/section_text_size"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:maxLines="1"
+                            android:ellipsize="end" />
+
+                        <!-- Discovered Count Badge: Displays number of discovered devices (uses secondary color) -->
+                        <TextView
+                            android:id="@+id/tvDiscoveredCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textSize="@dimen/badge_text_size"
+                            android:background="?attr/colorSecondary"
+                            android:textColor="?attr/colorOnSecondary"
+                            android:paddingHorizontal="@dimen/badge_padding_horizontal"
+                            android:paddingVertical="@dimen/badge_padding_vertical"
+                            android:minWidth="@dimen/badge_min_width"
+                            android:gravity="center"
+                            android:layout_marginStart="@dimen/icon_margin_small"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <!-- Discovered Devices List: Scrollable list view displaying devices found during scan -->
+                    <ListView
+                        android:id="@+id/listDiscovered"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:layout_margin="@dimen/list_margin"
+                        android:divider="?attr/colorOutlineVariant"
+                        android:dividerHeight="1dp"
+                        android:paddingHorizontal="@dimen/list_padding_horizontal"
+                        android:paddingVertical="@dimen/list_padding_vertical"
+                        android:clipToPadding="false"
+                        android:scrollbars="vertical"
+                        android:fastScrollEnabled="true"
+                        android:scrollbarStyle="outsideOverlay" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Bottom Section: Container for scan controls, progress indicator, and status message -->
+            <LinearLayout
+                android:id="@+id/bottomSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/bottom_section_padding">
+
+                <!-- Scanning Progress Bar: Animated indicator showing active scan in progress (hidden by default) -->
+                <ProgressBar
+                    android:id="@+id/progressScanning"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/progress_bar_height"
+                    android:layout_marginBottom="@dimen/progress_margin"
+                    android:layout_marginHorizontal="@dimen/button_margin_horizontal"
+                    android:indeterminate="true"
+                    android:visibility="gone"
+                    android:progressTint="?attr/colorPrimary" />
+
+                <!-- Scan Button: Primary action button to start/stop Bluetooth device scanning -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnScan"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height"
+                    android:layout_marginHorizontal="@dimen/button_margin_horizontal"
+                    android:layout_marginBottom="@dimen/button_margin_bottom"
+                    android:text="Start Scanning"
+                    android:textSize="@dimen/button_text_size"
+                    android:textStyle="bold"
+                    app:icon="@android:drawable/ic_menu_search"
+                    app:iconGravity="textStart"
+                    app:iconPadding="@dimen/button_icon_padding"
+                    app:iconSize="@dimen/button_icon_size"
+                    app:cornerRadius="@dimen/button_corner_radius"
+                    app:backgroundTint="?attr/colorPrimary"
+                    app:rippleColor="?attr/colorOnPrimary"
+                    android:elevation="@dimen/button_elevation"
+                    android:stateListAnimator="@null" />
+
+                <!-- Scan Status Text: Informational message about scanning state or instructions -->
+                <TextView
+                    android:id="@+id/tvScanStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/status_text_margin"
+                    android:layout_marginBottom="@dimen/status_text_margin_bottom"
+                    android:text="Tap scan to discover nearby devices"
+                    android:textSize="@dimen/status_text_size"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:gravity="center"
+                    android:alpha="0.8"
+                    android:lineSpacingMultiplier="1.2"
+                    android:maxLines="2"
+                    android:ellipsize="end" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

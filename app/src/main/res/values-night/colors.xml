@@ -1,0 +1,14 @@
+<resources>
+    <color name="colorOnPrimary">#FFFFFFFF</color>
+    <color name="blue_500">#2196F3</color>
+    <color name="white">#FFFFFFFF</color> <!-- FIXED: Was incorrectly set to dark gray. This should be actual white. -->
+    <color name="black">#FF000000</color> <!-- Added for consistency -->
+    <color name="black_500">#FFFFFF</color>
+    <color name="text_primary">#E0E0E0</color>
+    <color name="text_secondary">#B3B3B3</color> <!-- Added for consistency -->
+    <color name="background_color">#121212</color>
+
+    <!-- Consistent colors for dark theme. -->
+    <color name="text_timestamp_received">#B3B3B3</color>
+    <color name="text_timestamp_sent">#707070</color>
+</resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Landscape: Make sections more equal in height -->
+    <integer name="paired_weight">1</integer>
+    <integer name="discovered_weight">1</integer>
+</resources>

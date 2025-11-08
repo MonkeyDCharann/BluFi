@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Layout weights for responsive sections -->
+    <integer name="paired_weight">3</integer>
+    <integer name="discovered_weight">4</integer>
+</resources>

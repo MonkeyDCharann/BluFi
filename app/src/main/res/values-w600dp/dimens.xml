@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tablet/Large screen adjustments -->
+    <dimen name="screen_padding">24dp</dimen>
+    <dimen name="screen_padding_vertical">24dp</dimen>
+
+    <dimen name="section_spacing">28dp</dimen>
+
+    <dimen name="card_corner_radius">16dp</dimen>
+    <dimen name="card_elevation_high">6dp</dimen>
+    <dimen name="card_elevation_medium">4dp</dimen>
+    <dimen name="card_padding">24dp</dimen>
+
+    <dimen name="header_min_height">80dp</dimen>
+    <dimen name="header_text_size">22sp</dimen>
+
+    <dimen name="section_header_padding">20dp</dimen>
+    <dimen name="section_header_min_height">64dp</dimen>
+    <dimen name="section_text_size">18sp</dimen>
+
+    <dimen name="icon_size_large">28dp</dimen>
+    <dimen name="icon_size_medium">24dp</dimen>
+    <dimen name="icon_margin">16dp</dimen>
+    <dimen name="icon_margin_small">12dp</dimen>
+
+    <dimen name="list_margin">16dp</dimen>
+    <dimen name="list_padding_horizontal">12dp</dimen>
+    <dimen name="list_padding_vertical">12dp</dimen>
+
+    <dimen name="badge_text_size">14sp</dimen>
+    <dimen name="badge_padding_horizontal">12dp</dimen>
+    <dimen name="badge_padding_vertical">6dp</dimen>
+    <dimen name="badge_min_width">32dp</dimen>
+
+    <dimen name="bottom_section_padding">16dp</dimen>
+    <dimen name="progress_bar_height">6dp</dimen>
+    <dimen name="progress_margin">16dp</dimen>
+
+    <dimen name="button_height">64dp</dimen>
+    <dimen name="button_margin_horizontal">16dp</dimen>
+    <dimen name="button_margin_bottom">16dp</dimen>
+    <dimen name="button_text_size">18sp</dimen>
+    <dimen name="button_icon_padding">12dp</dimen>
+    <dimen name="button_icon_size">24dp</dimen>
+    <dimen name="button_corner_radius">32dp</dimen>
+    <dimen name="button_elevation">6dp</dimen>
+
+    <dimen name="status_text_margin">20dp</dimen>
+    <dimen name="status_text_margin_bottom">12dp</dimen>
+    <dimen name="status_text_size">16sp</dimen>
+
+    <dimen name="min_content_height">700dp</dimen>
+</resources>

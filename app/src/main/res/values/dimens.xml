@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Screen padding -->
+    <dimen name="screen_padding">16dp</dimen>
+    <dimen name="screen_padding_vertical">16dp</dimen>
+
+    <!-- Section spacing -->
+    <dimen name="section_spacing">20dp</dimen>
+
+    <!-- Card properties -->
+    <dimen name="card_corner_radius">12dp</dimen>
+    <dimen name="card_elevation_high">4dp</dimen>
+    <dimen name="card_elevation_medium">2dp</dimen>
+    <dimen name="card_padding">16dp</dimen>
+
+    <!-- Header -->
+    <dimen name="header_min_height">72dp</dimen>
+    <dimen name="header_text_size">18sp</dimen>
+
+    <!-- Section headers -->
+    <dimen name="section_header_padding">16dp</dimen>
+    <dimen name="section_header_min_height">56dp</dimen>
+    <dimen name="section_text_size">16sp</dimen>
+
+    <!-- Icons -->
+    <dimen name="icon_size_large">24dp</dimen>
+    <dimen name="icon_size_medium">20dp</dimen>
+    <dimen name="icon_margin">12dp</dimen>
+    <dimen name="icon_margin_small">8dp</dimen>
+
+    <!-- Lists -->
+    <dimen name="list_margin">8dp</dimen>
+    <dimen name="list_padding_horizontal">8dp</dimen>
+    <dimen name="list_padding_vertical">8dp</dimen>
+
+    <!-- Badges -->
+    <dimen name="badge_text_size">12sp</dimen>
+    <dimen name="badge_padding_horizontal">8dp</dimen>
+    <dimen name="badge_padding_vertical">4dp</dimen>
+    <dimen name="badge_min_width">24dp</dimen>
+
+    <!-- Bottom section -->
+    <dimen name="bottom_section_padding">12dp</dimen>
+    <dimen name="progress_bar_height">4dp</dimen>
+    <dimen name="progress_margin">12dp</dimen>
+
+    <!-- Button -->
+    <dimen name="button_height">56dp</dimen>
+    <dimen name="button_margin_horizontal">8dp</dimen>
+    <dimen name="button_margin_bottom">12dp</dimen>
+    <dimen name="button_text_size">16sp</dimen>
+    <dimen name="button_icon_padding">8dp</dimen>
+    <dimen name="button_icon_size">20dp</dimen>
+    <dimen name="button_corner_radius">28dp</dimen>
+    <dimen name="button_elevation">4dp</dimen>
+
+    <!-- Status text -->
+    <dimen name="status_text_margin">16dp</dimen>
+    <dimen name="status_text_margin_bottom">8dp</dimen>
+    <dimen name="status_text_size">14sp</dimen>
+
+    <!-- Content -->
+    <dimen name="min_content_height">600dp</dimen>
+</resources>

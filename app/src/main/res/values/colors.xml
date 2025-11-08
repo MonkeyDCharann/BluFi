@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Wallpapers-->
+    <color name="wallpaper_default">#FFFFFF</color>
+    <color name="wallpaper_blush">#FFE8E8</color>
+    <color name="wallpaper_mint">#E0FBEB</color>
+    <color name="wallpaper_sky">#E1F5FE</color>
+
+    <color name="wallpaper_lavender">#F3E5F5</color>
+    <color name="wallpaper_sand">#F5F1E5</color>
+    <color name="wallpaper_slate">#E2E6E9</color>
+    <color name="wallpaper_night">#263238</color>
+
+    <color name="wallpaper_peach">#FFDAB9</color>
+    <color name="wallpaper_lilac">#C8A2C8</color>
+    <color name="wallpaper_cream">#FFFDD0</color>
+    <color name="wallpaper_rose">#E0BFB8</color>
+
+    <color name="wallpaper_aqua">#E0FFFF</color>
+    <color name="wallpaper_coral">#FF7F50</color>
+    <color name="wallpaper_olive">#D4D4B7</color>
+    <color name="wallpaper_gold">#FFDF99</color>
+
+    <color name="wallpaper_forest">#2E4035</color>
+    <color name="wallpaper_navy">#2C3E50</color>
+    <color name="wallpaper_maroon">#5B2C2C</color>
+    <color name="wallpaper_charcoal">#36454F</color>
+
+    <color name="wallpaper_terracotta">#E2725B</color>
+    <color name="wallpaper_sage">#B2AC88</color>
+    <color name="wallpaper_steel_blue">#A5B4C4</color>
+    <color name="wallpaper_mauve">#E0B0FF</color>
+    <color name="wallpaper_mustard">#FFDB58</color>
+
+    <color name="wallpaper_teal">#008080</color>
+    <color name="wallpaper_plum">#4E2A40</color>
+    <color name="wallpaper_ruby">#9B111E</color>
+    <color name="wallpaper_graphite">#383838</color>
+
+    <color name="wallpaper_periwinkle">#CCCCFF</color>
+    <color name="black">#FF000000</color>
+    <color name="wallpaper_crimson">#DC143C</color>
+    <color name="wallpaper_ivory">#FFFFF0</color>
+
+    <color name="colorOnPrimary">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="blue_500">#2196F3</color>
+    <color name="black_500">#1e1e24</color>
+
+    <!-- Primary Colors -->
+    <color name="primary_color">#1976D2</color>
+    <color name="primary_color_dark">#1565C0</color>
+    <color name="accent_color">#2196F3</color>
+
+    <!-- Background Colors -->
+    <color name="background_color">#FAFAFA</color>
+    <color name="chat_background">#FFFFFF</color>
+    <color name="input_background">#F5F5F5</color>
+    <color name="message_input_background">#FFFFFF</color>
+
+    <!-- Text Colors -->
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="text_hint">#BDBDBD</color>
+
+    <!-- Message Bubble Colors -->
+    <color name="message_sent_background">#E3F2FD</color>
+    <color name="message_received_background">#F5F5F5</color>
+
+    <!-- Status Colors -->
+    <color name="online_status">#4CAF50</color>
+    <color name="offline_status">#9E9E9E</color>
+
+    <!-- Dark Theme Colors (Optional) -->
+    <color name="background_color_dark">#121212</color>
+    <color name="chat_background_dark">#1E1E1E</color>
+    <color name="input_background_dark">#2A2A2A</color>
+    <color name="text_primary_dark">#FFFFFF</color>
+    <color name="text_secondary_dark">#B3B3B3</color>
+
+    <color name="status_connected">#4CAF50</color>
+    <color name="status_disconnected">#F44336</color>
+    <color name="status_connecting">#FF9800</color>
+
+    <color name="message_received_bg">#E0E0E0</color>
+    <color name="message_sent_bg">#007AFF</color>
+    <color name="received_avatar_bg">#8A8A8F</color>
+    <color name="text_timestamp_received">#8A8A8F</color>
+    <color name="text_timestamp_sent">#B2D4FC</color>
+</resources>
