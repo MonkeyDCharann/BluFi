@@ -1,4 +1,4 @@
-package com.example.blufi
+package com.marwadiuniversity.blufi
 
 import android.content.Intent
 import android.os.Bundle

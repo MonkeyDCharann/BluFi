@@ -7,15 +7,17 @@
 
     <ImageView
         android:id="@+id/splashLogo"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="266dp"
+        android:layout_height="279dp"
         android:contentDescription="App Logo"
         android:scaleType="fitCenter"
         android:src="@mipmap/blufi_foreground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.422" />
 
     <LinearLayout
         android:id="@+id/linearLayout"

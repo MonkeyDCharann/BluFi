@@ -1,4 +1,4 @@
-package com.example.blufi
+package com.marwadiuniversity.blufi
 
 import android.Manifest
 import android.annotation.SuppressLint

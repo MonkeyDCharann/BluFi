@@ -29,4 +29,40 @@
         android:drawablePadding="16dp"
         android:gravity="center_vertical"/>
 
+    <TextView
+        android:id="@+id/layout_report_bug"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Report a Bug"
+        android:textSize="16sp"
+        android:padding="12dp"
+        android:background="?attr/selectableItemBackground"
+        android:drawableStart="@drawable/ic_bug_report"
+        android:drawablePadding="16dp"
+        android:gravity="center_vertical"/>
+
+    <TextView
+        android:id="@+id/layout_terms_policy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Terms and Policy"
+        android:textSize="16sp"
+        android:padding="12dp"
+        android:background="?attr/selectableItemBackground"
+        android:drawableStart="@drawable/ic_policy"
+        android:drawablePadding="16dp"
+        android:gravity="center_vertical"/>
+
+    <TextView
+        android:id="@+id/layout_developed_by"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Developed by"
+        android:textSize="16sp"
+        android:padding="12dp"
+        android:background="?attr/selectableItemBackground"
+        android:drawableStart="@drawable/ic_code"
+        android:drawablePadding="16dp"
+        android:gravity="center_vertical"/>
+
 </LinearLayout>

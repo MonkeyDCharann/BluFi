@@ -1,4 +1,4 @@
-package com.example.blufi
+package com.marwadiuniversity.blufi
 
 import android.bluetooth.BluetoothClass
 import android.Manifest
@@ -27,7 +27,6 @@ import android.widget.ListView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import android.widget.ScrollView
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity

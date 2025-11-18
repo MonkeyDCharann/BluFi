@@ -10,12 +10,23 @@
         android:id="@+id/systemText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/system_message_background"
         android:paddingHorizontal="12dp"
         android:paddingVertical="6dp"
         android:text="System Message"
-        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textColor="?attr/colorOnSurface"
         android:textSize="12sp"
         android:textStyle="italic" />
+
+    <TextView
+        android:id="@+id/systemDate"
+        android:background="@drawable/system_message_background"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="6dp"
+        android:text="Date"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="13.5sp"
+        android:textStyle="bold|italic"/>
 
 </LinearLayout>

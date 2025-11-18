@@ -5,17 +5,21 @@ plugins {
 }
 
 android {
-    namespace = "com.example.blufi"
+    namespace = "com.marwadiuniversity.blufi"
     compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.blufi"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "2.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {

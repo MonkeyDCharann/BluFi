@@ -1,7 +1,6 @@
-package com.example.blufi
+package com.marwadiuniversity.blufi
 
 import android.content.Context
-import androidx.core.content.ContextCompat
 
 object WallpaperPrefs {
     private const val PREFS_NAME = "chat_prefs"

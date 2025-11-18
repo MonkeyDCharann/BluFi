@@ -1,4 +1,4 @@
-package com.example.blufi
+package com.marwadiuniversity.blufi
 
 import androidx.room.Dao
 import androidx.room.Insert
