@@ -299,7 +299,8 @@ class Device_List : AppCompatActivity() {
         bondedDevices?.forEach { device ->
             val deviceName = device.name ?: "Unknown Device"
             paired.add(device)
-            pairedAdapter.add("$deviceName\n${device.address}")
+            // UPDATED: Only add the device name, not the address
+            pairedAdapter.add(deviceName)
         }
         updateDeviceCounts()
     }
@@ -325,7 +326,7 @@ class Device_List : AppCompatActivity() {
             val method = device.javaClass.getMethod("removeBond")
             method.invoke(device)
             Toast.makeText(this, "Unpairing with ${device.name}", Toast.LENGTH_SHORT).show()
-            Toast.makeText(this, "Unpaired with ${device.name}", Toast.LENGTH_SHORT).show()
+            // The BOND_STATE_CHANGED broadcast will handle the list update
         } catch (e: Exception) {
             Toast.makeText(this, "Failed to unpair device.", Toast.LENGTH_SHORT).show()
             e.printStackTrace()
@@ -361,13 +362,16 @@ class Device_List : AppCompatActivity() {
                                 !paired.any { p -> p.address == it.address }) {
                                 val deviceName = it.name ?: "Unnamed Device"
                                 discovered.add(it)
-                                discoveredAdapter.add("$deviceName\n${it.address}")
+                                discoveredAdapter.add(deviceName)
                                 updateDeviceCounts()
                             }
                         } else {
-                            // It's not a chattable device (e.g., headphones), show a toast
-                            val deviceName = it.name ?: "Unsupported Device"
-                            Toast.makeText(context, "'$deviceName' is not a device you can chat with.", Toast.LENGTH_SHORT).show()
+                            // It's not a chattable device (e.g., headphones).
+                            // Only show the toast if the device is not already paired.
+                            if (!paired.any { p -> p.address == it.address }) {
+                                val deviceName = it.name ?: "Unsupported Device"
+                                Toast.makeText(context, "'$deviceName' is not a device you can chat with.", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
                 }
@@ -392,10 +396,11 @@ class Device_List : AppCompatActivity() {
                         intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
                     }
                     if (device?.bondState == BluetoothDevice.BOND_BONDED) {
-                        // Remove the newly paired device from the discovered list
+                        // Re-filter and refresh the discovered list after a device is paired
                         discovered.removeAll { it.address == device.address }
                         discoveredAdapter.clear()
-                        discovered.forEach { discoveredAdapter.add("${it.name}\n${it.address}") }
+                        // UPDATED: Only add the device name, not the address
+                        discovered.forEach { discoveredAdapter.add(it.name ?: "Unnamed Device") }
                         updateDeviceCounts()
                     }
                 }

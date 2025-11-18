@@ -21,7 +21,7 @@ abstract class ChatDatabase : RoomDatabase() {
                     ChatDatabase::class.java,
                     "chat_database"
                 )
-                    .fallbackToDestructiveMigration() // Added this line
+                    .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance

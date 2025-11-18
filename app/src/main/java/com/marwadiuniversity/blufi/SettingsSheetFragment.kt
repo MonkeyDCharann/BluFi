@@ -2,13 +2,17 @@ package com.example.blufi
 
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.GridView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -58,6 +62,26 @@ class SettingsSheetFragment : BottomSheetDialogFragment() {
         view.findViewById<View>(R.id.layout_help).setOnClickListener {
             HelpBottomSheetFragment.newInstance().show(parentFragmentManager, HelpBottomSheetFragment.TAG)
             dismiss() // Close settings sheet
+        }
+
+        view.findViewById<TextView>(R.id.layout_report_bug).setOnClickListener {
+            val intent = Intent(activity, ReportBugActivity::class.java)
+            startActivity(intent)
+            dismiss()
+        }
+
+        view.findViewById<TextView>(R.id.layout_terms_policy).setOnClickListener {
+            val githubUrl = "https://github.com/MonkeyDCharann/BluFi" // Replace with your GitHub URL
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(githubUrl))
+            startActivity(intent)
+            dismiss()
+        }
+
+        view.findViewById<TextView>(R.id.layout_developed_by).setOnClickListener {
+            val linkedInUrl = "https://www.linkedin.com/in/devicharan-dasari-b57468276/" // Replace with your LinkedIn URL
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(linkedInUrl))
+            startActivity(intent)
+            dismiss()
         }
     }
 

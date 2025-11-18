@@ -52,9 +52,9 @@ import java.io.InputStreamReader
 import java.io.OutputStream
 import java.util.*
 import androidx.core.content.FileProvider
+import java.text.SimpleDateFormat
 
-// FIX 1: Define the SocketManager object. I'm assuming it should be a simple object
-// to hold the static reference across activities/launches.
+// FIX 1: Define the SocketManager object.
 object SocketManager {
     var activeSocket: BluetoothSocket? = null
 }
@@ -107,8 +107,6 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
 
     override fun onConfigurationChanged(@NonNull newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        // Call recreate() to destroy and immediately restart the activity.
-        // This forces the system to apply the new theme resources instantly.
         recreate()
     }
 
@@ -116,9 +114,6 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            // Permission for a file being SENT isn't usually needed, as we copy it internally.
-            // Removing the persistence attempt here.
-
             if (isConnected) {
                 sendFile(it)
             } else {
@@ -132,7 +127,6 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_chat)
 
-        // This is still needed to make the status bar icons light/dark
         updateSystemBarsTheme()
 
         val rootView = findViewById<View>(R.id.root)
@@ -141,25 +135,19 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
         applySavedWallpaper()
 
         ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
-            // Get the height of the system status bar
             val systemBarsTop = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
-
-            // Set our spacer view's height to match the status bar height
             statusBarBackground.layoutParams.height = systemBarsTop
             statusBarBackground.requestLayout()
 
-            // Handle the keyboard and navigation bar at the bottom
             val systemBarsBottom = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
             val imeBottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
             val bottomPadding = if (imeBottom > systemBarsBottom) imeBottom else systemBarsBottom
 
-            // Apply ONLY bottom padding to the root view for the keyboard/nav bar
             view.updatePadding(bottom = bottomPadding)
 
             WindowInsetsCompat.CONSUMED
         }
 
-        // --- The rest of your setup code remains the same ---
         db = ChatDatabase.getDatabase(this)
         isServer = intent.getBooleanExtra("is_server", false)
         connectedDeviceName = intent.getStringExtra("device_name") ?: "Friend"
@@ -178,7 +166,6 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
             val chatRecyclerView = findViewById<RecyclerView>(R.id.chatRecyclerView)
 
             rootView.setBackgroundColor(color)
-            // Make RecyclerView transparent to see the root background
             chatRecyclerView.background = null
         }
     }
@@ -204,7 +191,6 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
 
         recyclerView = findViewById(R.id.chatRecyclerView)
 
-        // FIX: Provide the required lambda function (onFileClick) to the ChatAdapter constructor
         chatAdapter = ChatAdapter(chatMessages, connectedDeviceName) { uri, mimeType ->
             openFile(uri, mimeType)
         }
@@ -216,7 +202,6 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
         updateSendButtonState(false)
         updateConnectionStatus("Initializing...")
 
-        // Set the device name in the header
         deviceNameTextView.text = connectedDeviceName
 
         recyclerView = findViewById(R.id.chatRecyclerView)
@@ -228,13 +213,14 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
         menuButton.setOnClickListener { showMenuOptions() }
         attachButton.setOnClickListener { filePickerLauncher.launch("*/*") }
         scrollToBottomButton.setOnClickListener {
-            recyclerView.smoothScrollToPosition(chatMessages.size - 1)
+            // Note: chatMessages.size should be used here, even though adapter size is different,
+            // as the adapter will scroll to the final position which corresponds to the last message.
+            recyclerView.smoothScrollToPosition(chatAdapter.itemCount - 1)
         }
 
         messageBox.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // Connection status check is now handled by handleConnectionLost
                 updateSendButtonState(!s.isNullOrBlank() && isConnected)
             }
             override fun afterTextChanged(s: Editable?) {}
@@ -269,20 +255,16 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
         }
     }
 
-    // New function for refreshing chat history (Option 1)
     private fun refreshChatHistory() {
-        // Clear the current list in memory
         chatMessages.clear()
-
-        // Reload all messages from the database for the connected device
         deviceAddress?.let { address ->
             activityScope.launch {
                 val history = withContext(Dispatchers.IO) {
                     db.chatMessageDao().getMessagesForDevice(address)
                 }
                 chatMessages.addAll(history)
-                updateChatView() // Notifies the adapter and updates the RecyclerView
-                recyclerView.scrollToPosition(chatMessages.size - 1) // Scroll to the latest message
+                updateChatView()
+                recyclerView.scrollToPosition(chatAdapter.itemCount - 1)
             }
         }
 
@@ -294,7 +276,7 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
         chatMessages.add(message)
         updateChatView()
         if (wasAtBottom) {
-            recyclerView.scrollToPosition(chatMessages.size - 1)
+            recyclerView.scrollToPosition(chatAdapter.itemCount - 1)
         }
         activityScope.launch(Dispatchers.IO) {
             db.chatMessageDao().insertMessage(message)
@@ -344,13 +326,8 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
         }
         addSystemMessage("Role: ${if (isServer) "Server" else "Client"}", isVisibleToUser = false)
 
-        // FIX 2 & 3: Fix Unresolved references to SocketManager and isConnected, and the type mismatch.
-        // We must check our local 'isConnected' and the 'activeSocket' from the newly defined object.
         val existingSocket = SocketManager.activeSocket
-        if (existingSocket != null && existingSocket.isConnected) { // BluetoothSocket.isConnected is available in the API but often not reliable
-            // We use the local 'isConnected' for state management. When a socket is established, we set isConnected = true.
-            // When connection is lost (IOException), we set isConnected = false.
-            // Since we rely on the state being managed, we trust the existing socket is good.
+        if (existingSocket != null && existingSocket.isConnected) {
             onConnectionEstablished(existingSocket)
             return
         }
@@ -378,20 +355,12 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
         }
     }
 
-    /**
-     * Opens a file given its URI and MIME type.
-     * It handles two cases:
-     * 1. Public content:// URIs (for received files from MediaStore).
-     * 2. Private file:// URIs (for sent files stored in app's external files dir, opened via FileProvider).
-     */
     private fun openFile(uri: Uri, mimeType: String?) {
         // --- 1. Handle Public Content URIs (Received Files) ---
         if (uri.scheme == "content") {
             try {
-                // Public content URIs can often be opened directly as the OS handles permissions.
                 val intent = Intent(Intent.ACTION_VIEW).apply {
                     setDataAndType(uri, mimeType)
-                    // Grant temporary permission to the viewing app (essential for content URIs)
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
@@ -404,18 +373,14 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
         }
 
         // --- 2. Handle Private File URIs (Sent Files) via FileProvider ---
-        // This logic is for files that were copied to getExternalFilesDir() when sending.
         val fileAuthority = "${applicationContext.packageName}.fileprovider"
         val fileToOpen: File?
 
-        // Check if the URI is a simple file:// path (This is what is stored for sent files)
         if (uri.scheme == "file" && uri.path != null) {
-            // Rebuild the path to the file in the app's private external folder.
             val chatMessage = chatMessages.find { it.fileUri == uri.toString() }
             val savedFileName = chatMessage?.fileName
 
             if (savedFileName != null) {
-                // Rebuild the path to the file in the app's private external folder.
                 fileToOpen = File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), savedFileName)
             } else {
                 Log.e("ChatActivity", "Failed to retrieve filename for private file URI.")
@@ -423,7 +388,6 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
                 return
             }
         } else {
-            // URI is neither public content nor private file.
             Toast.makeText(this, "Unsupported file URI scheme: ${uri.scheme}", Toast.LENGTH_LONG).show()
             return
         }
@@ -433,7 +397,6 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
 
         if (fileToOpen.exists()) {
             try {
-                // Generate the secure content:// URI via FileProvider
                 val fileProviderUri = FileProvider.getUriForFile(
                     this,
                     fileAuthority,
@@ -442,14 +405,12 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
 
                 val intent = Intent(Intent.ACTION_VIEW).apply {
                     setDataAndType(fileProviderUri, mimeType)
-                    // VITAL: Grant temporary permission to the viewing app
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
 
                 startActivity(intent)
             } catch (e: IllegalArgumentException) {
-                // This happens if the file path is not correctly defined in file_paths.xml
                 Log.e("ChatActivity", "FileProvider failed: Check file_paths.xml. ${e.message}")
                 Toast.makeText(this, "File configuration error. Cannot open.", Toast.LENGTH_LONG).show()
             } catch (e: Exception) {
@@ -457,7 +418,6 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
                 Toast.makeText(this, "Cannot open file: No application found.", Toast.LENGTH_LONG).show()
             }
         } else {
-            // This indicates the file was physically deleted from storage
             Toast.makeText(this, "Error: File no longer exists on device storage.", Toast.LENGTH_LONG).show()
             Log.e("ChatActivity", "File not found at expected location: ${fileToOpen.absolutePath}")
         }
@@ -467,7 +427,6 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
         if (messageText.isNotEmpty() && isConnected) {
             Thread {
                 try {
-                    // FIX: Append a newline character (\n) as a delimiter for the receiver's BufferedReader.
                     val dataToSend = messageText + "\n"
                     outputStream?.write(dataToSend.toByteArray())
                     outputStream?.flush()
@@ -484,7 +443,6 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
                         }
                     }
                 } catch (e: IOException) {
-                    // CRITICAL FIX: If writing fails, the connection is broken. Handle it immediately.
                     handleConnectionLost(e.message)
                 }
             }.start()
@@ -492,12 +450,10 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
     }
 
     private fun sendFile(fileUri: Uri) {
-        // These variables need to be declared and initialized before they are used.
         var fileName: String? = null
         var fileSize: Long = 0
         val mimeType = contentResolver.getType(fileUri)
 
-        // Get file details on the main thread
         contentResolver.query(fileUri, null, null, null, null)?.use { cursor ->
             if (cursor.moveToFirst()) {
                 val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
@@ -513,20 +469,15 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
         }
 
         // --- CRITICAL FIX START: Copy file to private storage (for stable sending) ---
-        // We still save the SENT file privately so the user can open it later even if the original app that provided the URI is gone.
         val newFile = File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName!!)
         val newFileUri: Uri
 
         try {
-            // 1. Copy the content from the temporary external URI (fileUri) to the new stable file location
             contentResolver.openInputStream(fileUri)?.use { input ->
                 FileOutputStream(newFile).use { output ->
                     input.copyTo(output)
                 }
             }
-
-            // 2. Use the stable file:// URI of the newly created file for the database
-            // This URI's path is now stable and accessible via FileProvider.
             newFileUri = Uri.fromFile(newFile)
 
         } catch (e: Exception) {
@@ -536,21 +487,18 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
         }
         // --- CRITICAL FIX END ---
 
-        // Now, create the ChatMessage object using the stable newFileUri.
         deviceAddress?.let { address ->
             val fileMessage = ChatMessage(
                 remoteDeviceAddress = address,
-                fileUri = newFileUri.toString(), // Use the stable PRIVATE file:// URI
+                fileUri = newFileUri.toString(),
                 fileName = fileName,
                 fileMimeType = mimeType,
                 isUser = true,
                 timestamp = System.currentTimeMillis()
             )
-            // Add the message to the list and update the UI
             handler.post { addMessage(fileMessage) }
         }
 
-        // The rest of the file sending logic runs on a background thread.
         Thread {
             try {
                 if (!isConnected) {
@@ -567,13 +515,11 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
                     put("mimeType", mimeType)
                 }
 
-                // FIX: Send the header string followed by a newline delimiter (\n)
                 val headerWithDelimiter = header.toString() + "\n"
                 outputStream?.write(headerWithDelimiter.toByteArray())
                 outputStream?.flush()
                 Thread.sleep(100)
 
-                // Use the stable file path for the Bluetooth input stream
                 val fileInputStream = FileInputStream(newFile)
                 val buffer = ByteArray(4096)
                 var bytesRead: Int
@@ -595,7 +541,6 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
                     addSystemMessage("You sent file: $fileName", isVisibleToUser = true)
                 }
             } catch (e: Exception) {
-                // CRITICAL FIX: If writing fails during file transfer, the connection is broken.
                 handleConnectionLost("Failed to send file.")
             }
         }.start()
@@ -603,7 +548,6 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
 
     private fun startListening() {
         listeningThread = Thread {
-            // Use a BufferedReader to easily read newline-terminated strings (messages or headers)
             try {
                 val reader = BufferedReader(InputStreamReader(inputStream!!))
 
@@ -616,46 +560,33 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
 
                     if (receivedLine.isNullOrEmpty()) continue
 
-                    // 1. Check if the received line is a JSON file transfer header
                     if (receivedLine.startsWith("{") && receivedLine.endsWith("}")) {
                         try {
                             val header = JSONObject(receivedLine)
                             if (header.getString("type") == "file_transfer") {
-                                // --- File Transfer Logic ---
                                 val fileName = header.getString("fileName")
                                 val fileSize = header.getLong("fileSize")
                                 val mimeType = header.getString("mimeType")
 
-                                // >>> START PUBLIC STORAGE FIX: Use MediaStore for public access <<<
                                 val fileOutputStream: OutputStream?
                                 val fileUri: Uri?
 
-                                // 1. Determine the correct MediaStore collection based on API level
                                 @Suppress("DEPRECATION")
                                 val collection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                                     MediaStore.Downloads.EXTERNAL_CONTENT_URI
                                 } else {
-                                    // Use the generic external storage URI for older versions (requires WRITE_EXTERNAL_STORAGE permission)
                                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                                    // Note: While Media.EXTERNAL_CONTENT_URI is typically for images,
-                                    // it is the most reliable cross-API-level public collection URI fallback.
                                 }
 
-                                // 2. Create ContentValues for the MediaStore entry
                                 val contentValues = ContentValues().apply {
                                     put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
                                     put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
 
-                                    // Set the target directory to DOWNLOADS for public access (API 29+)
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                                         put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
-                                    } else {
-                                        // For older APIs, the file will be saved to the root of external storage
-                                        // or a directory specified in the path, but we rely on MediaStore to handle it.
                                     }
                                 }
 
-                                // 3. Insert a new entry into MediaStore and get the public content:// URI
                                 val resolver = contentResolver
                                 fileUri = resolver.insert(collection, contentValues)
 
@@ -664,15 +595,13 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
                                     continue
                                 }
 
-                                // 4. Open the stream to the public storage location
                                 fileOutputStream = resolver.openOutputStream(fileUri)
 
                                 if (fileOutputStream == null) {
                                     handler.post { addSystemMessage("Error: Could not open public file stream.", isVisibleToUser = true) }
-                                    resolver.delete(fileUri, null, null) // Clean up partial MediaStore entry
+                                    resolver.delete(fileUri, null, null)
                                     continue
                                 }
-                                // >>> END PUBLIC STORAGE FIX <<<
 
                                 var bytesReceived: Long = 0
                                 val fileBuffer = ByteArray(4096)
@@ -681,7 +610,6 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
                                     val bytesToRead = minOf(fileBuffer.size, remainingBytes)
                                     val bytesRead = inputStream?.read(fileBuffer, 0, bytesToRead) ?: -1
                                     if (bytesRead == -1) {
-                                        // Handle premature end of stream during transfer
                                         fileOutputStream.close()
                                         resolver.delete(fileUri, null, null)
                                         throw IOException("File stream ended prematurely.")
@@ -701,7 +629,7 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
                                         isUser = false,
                                         timestamp = System.currentTimeMillis(),
                                         isSystem = false,
-                                        fileUri = fileUri.toString(), // The public content:// URI stored in DB
+                                        fileUri = fileUri.toString(),
                                         fileName = fileName,
                                         fileMimeType = mimeType
                                     )
@@ -726,7 +654,6 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
 
     private fun onConnectionEstablished(socket: BluetoothSocket) {
         bluetoothSocket = socket
-        // FIX 4: Use the newly defined SocketManager object
         SocketManager.activeSocket = socket
         inputStream = socket.inputStream
         outputStream = socket.outputStream
@@ -736,38 +663,27 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
         startListening()
     }
 
-    // CRITICAL FIX: Centralized and safer connection loss handler
     private fun handleConnectionLost(reason: String? = null) {
         handler.post {
-            // Only perform cleanup and status update if we were previously connected
             if (isConnected) {
                 isConnected = false
                 updateSendButtonState(false)
-
-                // Immediately update status before attempting socket closure
                 val displayReason = reason?.let { ": $it" } ?: ""
                 updateConnectionStatus("Disconnected")
-//                addSystemMessage("Connection lost$displayReason. Attempting cleanup...", isVisibleToUser = true)
             }
 
-            // Initiate cleanup regardless of previous state to ensure all resources are closed.
-            // Run cleanup on a separate thread to prevent blocking the UI/handler thread.
             Thread {
                 try {
                     bluetoothSocket?.close()
                     bluetoothServerSocket?.close()
                 } catch (e: IOException) {
-                    // Ignore, since we are already dealing with a broken connection
                 } finally {
-                    // Nullify all references for garbage collection and reconnection attempts
                     bluetoothSocket = null
                     bluetoothServerSocket = null
                     inputStream = null
                     outputStream = null
-                    // FIX 5: Use the newly defined SocketManager object
                     SocketManager.activeSocket = null
 
-                    // Stop any existing threads
                     listeningThread?.interrupt()
                     serverThread?.interrupt()
                     clientThread?.interrupt()
@@ -778,13 +694,11 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
 
     @SuppressLint("MissingPermission")
     private fun connectToDevice(deviceAddress: String) {
-        // First, ensure any existing connection is properly closed before attempting a new one
         disconnect()
 
         clientThread = Thread {
             try {
                 val device = bluetoothAdapter?.getRemoteDevice(deviceAddress)
-                // Use a temporary socket variable in case the thread is interrupted
                 var tempSocket: BluetoothSocket? = null
                 tempSocket = device?.createRfcommSocketToServiceRecord(MY_UUID)
 
@@ -796,7 +710,6 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
                 }
             } catch (e: IOException) {
                 handler.post { updateConnectionStatus("Connection Failed! Try Reconnecting...") }
-                // Immediately close the failed socket
                 try { bluetoothSocket?.close() } catch (e: IOException) { /* ignore */ }
             } catch (e: SecurityException) {
                 handler.post { updateConnectionStatus("Permission Denied") }
@@ -807,7 +720,6 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
 
     @SuppressLint("MissingPermission")
     private fun startAsServer() {
-        // First, ensure any existing connection is properly closed before attempting to listen
         disconnect()
 
         serverThread = Thread {
@@ -815,10 +727,8 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
                 bluetoothServerSocket = bluetoothAdapter?.listenUsingRfcommWithServiceRecord("BluFiChat", MY_UUID)
                 handler.post { updateConnectionStatus("Waiting for connection...") }
 
-                // .accept() will block until connection or close() is called on the server socket
                 val socket = bluetoothServerSocket?.accept()
 
-                // If the socket is non-null, connection succeeded
                 handler.post {
                     socket?.let { onConnectionEstablished(it) }
                 }
@@ -832,11 +742,9 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
         serverThread?.start()
     }
 
-    // FIX: Simplified and more effective disconnect
     private fun disconnect() {
         if (!isConnected && bluetoothSocket == null && bluetoothServerSocket == null) return
 
-        // 1. Immediately update state and UI
         val wasConnected = isConnected
         isConnected = false
         handler.post {
@@ -847,25 +755,20 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
             }
         }
 
-        // 2. Stop running threads to prevent further I/O operations
         listeningThread?.interrupt()
         serverThread?.interrupt()
         clientThread?.interrupt()
 
-        // 3. Close the sockets on a background thread to prevent blocking the UI
         Thread {
             try {
                 bluetoothSocket?.close()
                 bluetoothServerSocket?.close()
             } catch (e: IOException) {
-                // Ignore failure to close an already broken socket
             } finally {
-                // 4. Clean up references
                 bluetoothSocket = null
                 bluetoothServerSocket = null
                 inputStream = null
                 outputStream = null
-                // FIX 6: Use the newly defined SocketManager object
                 SocketManager.activeSocket = null
             }
         }.start()
@@ -887,20 +790,13 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
     }
 
     private fun updateChatView() {
-        // This notifies the adapter that the data set has changed.
-        chatAdapter.notifyDataSetChanged()
+        // FIX: Call the new update function on the adapter to recalculate date headers
+        chatAdapter.updateMessages(chatMessages)
     }
 
     private fun updateSystemBarsTheme() {
-        // Get the modern window insets controller
         val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
-
-        // Check if the system is currently in night mode (dark theme)
         val isNightMode = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-
-        // Set the status bar icons to be light or dark.
-        // isAppearanceLightStatusBars = true means icons are dark (for light themes)
-        // isAppearanceLightStatusBars = false means icons are light (for dark themes)
         windowInsetsController.isAppearanceLightStatusBars = !isNightMode
     }
 
@@ -930,7 +826,7 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
         }
         connectionStatus.setTextColor(color)
         statusIcon.setImageResource(icon)
-        statusIcon.setColorFilter(color) // Ensures the icon also takes the color
+        statusIcon.setColorFilter(color)
     }
 
     private fun hasBluetoothPermissions(): Boolean {
@@ -972,7 +868,7 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
         popup.menuInflater.inflate(R.menu.chat_menu, popup.menu)
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
-                R.id.action_refresh -> { // Handle the new Refresh option
+                R.id.action_refresh -> {
                     refreshChatHistory()
                     true
                 }
@@ -1008,10 +904,20 @@ class ChatActivity : AppCompatActivity(), SettingsSheetFragment.SettingsListener
     }
 
     private fun showHelp() {
-        // Create an instance of your new BottomSheetFragment
         val helpSheet = HelpBottomSheetFragment.newInstance()
-
-        // Show it
         helpSheet.show(supportFragmentManager, HelpBottomSheetFragment.TAG)
+    }
+
+    private fun formatMessageDate(timestamp: Long): String {
+        val messageCalendar = Calendar.getInstance().apply { timeInMillis = timestamp }
+        val nowCalendar = Calendar.getInstance()
+
+        return if (messageCalendar.get(Calendar.YEAR) == nowCalendar.get(Calendar.YEAR) &&
+            messageCalendar.get(Calendar.DAY_OF_YEAR) == nowCalendar.get(Calendar.DAY_OF_YEAR)) {
+            "Today"
+        } else {
+            val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+            dateFormat.format(Date(timestamp))
+        }
     }
 }
